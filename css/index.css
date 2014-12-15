@@ -1,0 +1,118 @@
+.modal-dialog {
+    width: 98%;
+    height: 98%;
+}
+.modal-dialog-content {
+    position: absolute;
+    left: 5px;
+    right: 5px;
+    top: 38px;
+    bottom: 42px;
+}
+.modal-dialog-buttons {
+    position: absolute;
+    left: 5px;
+    right: 5px;
+    bottom: 5px;
+}
+#mapdialog-content {
+}
+#mapdialog-topmenu {
+    position: absolute;
+    left: 10px;
+    top: 15px;
+    bottom: 50px;
+    right: 0px;
+}
+#mapdialog-map {
+    position: absolute;
+    left: 0px;
+    top: 50px;
+    bottom: 0px;
+    right: 200px;
+    /*width: 200px;
+    height: 200px;*/
+    margin: 0px;
+    padding: 0px;
+}
+#mapdialog-rightmenu {
+    position: absolute;
+    top: 50px;
+    right: 0px;
+    bottom: 0px;
+    width: 200px;
+    overflow-y: scroll;
+}
+.ac-renderer {
+    left: 10px;
+    top: 37px;
+}
+.goog-menuitem {
+    white-space: normal !important;
+    padding: 4px 4px 4px 4px;
+}
+.goog-menu {
+    border: none;
+}
+.olControlPanel {
+    right: 0px;
+}
+.create-bbox {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    cursor: pointer;
+    height: 22px;
+    width: 22px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 4px 4px 4px 4px;
+    text-align: center;
+    padding: 3px;
+}
+.create-bbox-content {
+    height: 22px;
+    width: 22px;
+    color: #06c;
+    background: rgb(0, 60, 136);
+    background: rgba(0, 60, 136, 0.5);
+    border-radius: 4px 4px 4px 4px;
+    font-family: serif;
+    font-weight: bold;
+    line-height: 22px;
+}
+.create-bbox-content:hover {
+    background: #130085;
+    background: rgba(0, 60, 136, 0.7);
+}
+.olControlDrawFeatureItemActive .create-bbox-content {
+    color: rgb(245, 184, 0);
+    background: #FFE38F;
+    background: rgba(245, 184, 0, 0.5);
+}
+#loading-overlay {
+    display: none;
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    z-index: 100000;
+    background-image:url('../img/ajax-loader.gif');
+    background-repeat: no-repeat;
+    background-position:center;
+    background-color: white;
+    /* This works in IE 8 & 9 too */
+    /* ... but also 5, 6, 7 */
+    filter: alpha(opacity=70);
+
+    /* Older than Firefox 0.9 */
+    -moz-opacity:0.7;
+
+    /* Safari 1.x (pre WebKit!) */
+    -khtml-opacity: 0.7;
+
+    /* Modern!
+    /* Firefox 0.9+, Safari 2?, Chrome any?
+    /* Opera 9+, IE 9+ */
+    opacity: 0.7;
+}

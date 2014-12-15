@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<!-- saved from url=(0033)http://aleph.nkp.cz/aleph-cgi/aut -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="Sun, 06 Nov 1994 08:49:37 GMT">
+
+<meta http-equiv="Content-Script-Type" content="text/javascript">
+
+<link rel="stylesheet" href="css/goog/autocomplete.css" />
+<link rel="stylesheet" href="css/goog/dialog.css" />
+<link rel="stylesheet" href="css/goog/menu.css" />
+<link rel="stylesheet" href="css/goog/menuitem.css" />
+<link rel="stylesheet" href="css/aleph.css" type="text/css">
+<link rel="stylesheet" href="css/index.css" />
+
+<title>AUT - Návrh věcné autority</title>
+<script src="js/service-aut.js"></script>
+<script src="js/OpenLayers.js"></script>
+<script src="js/main.js"></script>
+<script language="JavaScript">
+<!--
+function search_map() {
+var p = document.f.P1001151__a.value.replace(/ *\(/,", ").replace(/\)/,"");
+    p = p.replace(/Česko/i,"Česká republika");
+    p = p.replace(/Slovensko/i,"Slovenská republika").replace(/ /g,"_");
+window.open("http://aleph.nkp.cz/aleph-cgi/search_map?p=" + encodeURIComponent(p) + "&z=12","search","height=600,width=800,scrollbars,resizable");
+}
+// -->
+</script>
+</head>
+
+<body topmargin="0" onload="document.f.P1001151__a.focus()">
+<br>
+<div class="title" align="left">
+      Návrh věcné autority - geografický termín
+</div>
+
+<p class="text1">
+Pouze pro návrh <b>nové autority</b>, připomínky ke stávajícím autoritám posílejte <a href="mailto:marie.balikova@nkp.cz"><b>e-mailem</b></a>.
+</p>
+
+<form method="post" name="f" action="./index_files/index.html" onsubmit="return submit_conf_ge()">
+<input type="hidden" name="sid" value="HKIRIRU7K346EVRQ3EH61MD6AAH7463HIM7725TMGR13AMTJ59">
+<input type="hidden" name="sg" value="BOA001">
+<input type="hidden" name="tp" value="ge">
+
+<p>
+<table width="100%" border="0" cellpadding="2" cellspacing="2">
+ <tbody><tr>
+  <td class="td1" id="bold" width="25%"> Sigla:&nbsp; </td>
+  <td class="td1" id="bold"> BOA001 </td>
+ </tr>
+ <input type="hidden" name="P0100LDR__" value="-----nz--a22-----n--4500">
+ <input type="hidden" name="P0200FMT__" value="GA">
+ <input type="hidden" name="P0300001__" value="ge">
+ <input type="hidden" name="P0400003__" value="CZ-PrNK">
+ <input type="hidden" name="P0500008__" value="------#n#acznnaabn-----------n-a#a------">
+ <input type="hidden" name="P0601040__a" value="BOA001">
+ <input type="hidden" name="P0602040__b" value="cze">
+ <tr>
+  <td class="td1" nowrap=""> Záhlaví <br>
+                        (geograf. termín):&nbsp;<b>*</b>&nbsp; </td>
+  <td class="td1" id="small" nowrap="">
+      <input type="text" size="55" maxlength="150" name="P1001151__a" id="P1001151__a" value="">
+  </td>
+ </tr>
+ <tr>
+  <td class="td1" nowrap="">
+      <a href="http://www.nkp.cz/o-knihovne/odborne-cinnosti/zpracovani-fondu/schvalene-materialy/geogr-kody1" target="info" title="Přehled geografických kódů a notací MDT pro Česko"><b>
+      Kód geograf.oblasti</b></a>:&nbsp;<b>*</b>&nbsp;
+  </td>
+  <td class="td1" id="small" nowrap="">
+      <input type="text" size="10" maxlength="7" name="P0701043__a" value="">
+  &nbsp;
+      <input type="text" size="10" maxlength="7" name="P0702043__a" value="">
+  &nbsp;
+      <input type="text" size="10" maxlength="7" name="P0703043__a" value="">
+  </td>
+ </tr>
+ <tr>
+  <td class="td1"> MDT:&nbsp; </td>
+  <td class="td1" id="small" nowrap="">
+      <input type="text" size="25" maxlength="50" name="P0801080__a" value="">
+  &nbsp;
+      <input type="text" size="25" maxlength="50" name="P0901080__a" value="">
+  </td>
+ </tr>
+ <tr>
+  <td class="td1"> Odkazovaná forma:&nbsp; </td>
+  <td class="td1" id="small" nowrap="">
+      <input type="text" size="25" maxlength="150" name="P1101451__a" value="">
+  &nbsp;
+      <input type="text" size="25" maxlength="150" name="P1201451__a" value="">
+  </td>
+ </tr>
+ <tr>
+  <td class="td1"> Příbuzný termín:&nbsp; </td>
+  <td class="td1" id="small" nowrap="">
+      <input type="text" size="25" maxlength="150" name="P1301551__a" value="">
+  &nbsp;
+      <input type="text" size="25" maxlength="150" name="P1401551__a" value="">
+  </td>
+ </tr>
+ <tr>
+  <td class="td1"> Podřazený termín:&nbsp; </td>
+  <td class="td1" id="small" nowrap="">
+      <input type="text" size="25" maxlength="150" name="P15015511_a" value="">
+  &nbsp;
+      <input type="text" size="25" maxlength="150" name="P16015511_a" value="">
+  </td>
+ </tr>
+ <tr>
+  <td class="td1"> Nadřazený termín:&nbsp; </td>
+  <td class="td1" id="small" nowrap="">
+      <input type="text" size="25" maxlength="150" name="P17015519_a" value="">
+  &nbsp;
+      <input type="text" size="25" maxlength="150" name="P18015519_a" value="">
+  </td>
+ </tr>
+ <tr>
+  <td class="td1"> GPS:&nbsp; </td>
+  <td class="td1" id="small" nowrap="">
+      <input type="text" size="25" maxlength="150" name="P2301GPS__a" id="P2301GPS__a" value=""> &nbsp;
+      <a href="#" id="map-search-button"><b>Vyhledat na mapě</b></a>
+  </td>
+ </tr>
+ <tr>
+  <td class="td1"> Status:&nbsp; </td>
+  <td class="td1" id="small" nowrap="">
+      <select name="P24019501_a">
+        <option value="">  </option>
+        <option value="správní celek">správní celek &nbsp; &nbsp; </option>
+      </select>
+  </td>
+ </tr>
+ <tr>
+  <td class="td1">
+      <a href="http://www.nkp.cz/o-knihovne/odborne-cinnosti/zpracovani-fondu/roztridit/geogr-citace-prameny" target="info" title="Přehled doporučených zdrojů ověření"><b>
+      Zdroj ověření</b></a>:&nbsp;<b>*</b>&nbsp;
+  </td>
+  <td class="td1" id="small" nowrap="">
+      <input type="text" size="55" maxlength="250" name="P1901670__a" value=""> &nbsp;&nbsp;
+  </td>
+ </tr>
+ <tr>
+  <td class="td1"> URL:&nbsp; </td>
+  <td class="td1" id="small">
+      <input type="text" size="55" maxlength="250" name="P210185642u" value="">
+  </td>
+ </tr>
+ <!--tr>
+  <td class=td1> &nbsp; </td>
+  <td class=td1 id=small>
+      <input type="text" size="55" maxlength="250" name="P220185642u" value="">
+  </td>
+ </tr>
+ <tr-->
+  <tr><td class="td1"> Poznámka:&nbsp; </td>
+  <td class="td1" id="small">
+      <input type="text" size="55" maxlength="250" name="P20016800_i" value="">
+  </td>
+ </tr>
+ <tr>
+  <td class="td1" colspan="2" align="right">
+      <a href="javascript:submit_form();">
+       <img src="img/f-go.gif" border="0" alt="Odeslat"></a>
+      <a href="javascript:window.close();">
+       <img src="img/f-cancel.gif" border="0" alt="Zrušit">
+  </a></td>
+ </tr>
+</tbody></table>
+</p></form>
+
+<div class="copyright"> © 2006 Ex Libris, NK ČR</div><br>
+
+<script>
+      main({target: 'map-search-button', heading: 'P1001151__a'});
+</script>
+
+</body></html>
