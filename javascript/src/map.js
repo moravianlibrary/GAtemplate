@@ -193,7 +193,6 @@ cz.mzk.authorities.template.Map = function(element) {
           strokeWidth: 2
         }),
         preFeatureInsert: function(feature) {
-          window.console.log('preFeatureInsert');
           return feature.geometry.transform(
             this_.gpsProjection_,
             this_.mapProjection_
@@ -478,7 +477,6 @@ cz.mzk.authorities.template.Map.prototype.drawPolygon_ = function(coordinates, l
  * @param {OpenLayers.Layer.Vector} layer
  */
 cz.mzk.authorities.template.Map.prototype.drawGeoJSON_ = function(geojson, layer) {
-  window.console.log(geojson);
   var geojsonFormat = new OpenLayers.Format.GeoJSON();
   layer.addFeatures(geojsonFormat.read(geojson));
 };
