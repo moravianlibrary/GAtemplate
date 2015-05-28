@@ -130,7 +130,6 @@ cz.mzk.authorities.template.dialogs.MapDialog = function() {
       {
         'q' : this_.searchElement_.value,
         'polygon_geojson' : '1',
-        'gazetteer' : '1',
         'format' : 'json'
       },
       function(data) {
