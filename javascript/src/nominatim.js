@@ -40,6 +40,9 @@ goog.require('goog.ui.ac.InputHandler');
 goog.require('goog.ui.ac.NominatimMatcher');
 goog.require('goog.ui.ac.Renderer');
 goog.require('goog.events');
+goog.require('goog.events.KeyHandler');
+goog.require('goog.events.KeyHandler.EventType');
+goog.require('goog.events.KeyCodes');
 
 
 /**
@@ -96,6 +99,12 @@ goog.ui.ac.Nominatim = function(input, opt_parent, opt_url, opt_payload) {
   goog.base(this, this.matcher_, renderer, inputhandler);
   goog.events.listen(this, goog.ui.ac.AutoComplete.EventType.UPDATE, function(e) {
     input.value = e.row['display_name'];
+  });
+  var kh = new goog.events.KeyHandler(input);
+  goog.events.listen(kh, goog.events.KeyHandler.EventType.KEY, function(e) {
+    if (e.keyCode == goog.events.KeyCodes.ENTER) {
+      e.stopPropagation();
+    }
   });
 
 };
