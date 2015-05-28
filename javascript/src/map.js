@@ -2,13 +2,16 @@ goog.provide('cz.mzk.authorities.template.Map');
 
 goog.require('cz.mzk.authorities.template.Authority');
 goog.require('goog.asserts');
+goog.require('goog.events.EventTarget');
 
 /**
  * Manages OpenLayers Map.
  * @param {Element} element The element under which the Map should be added.
  * @constructor
+ * @extends {goog.events.EventTarget}
  */
 cz.mzk.authorities.template.Map = function(element) {
+  goog.events.EventTarget.call(this);
   /** @type {cz.mzk.authorities.template.Map} */
   var this_ = this;
   /**
@@ -50,15 +53,19 @@ cz.mzk.authorities.template.Map = function(element) {
             this.removeAllFeatures();
             this_.addModifyInteraction_();
             this_.createBBoxControl_.deactivate();
+            this_.dispatchEvent('sketchcomplete');
             return true;
           },
           featureadded: function(e) {
-            console.log('featureadded');
             var point = e.feature.geometry.getBounds().getCenterLonLat();
             var geom = new OpenLayers.Geometry.Point(point.lon, point.lat);
             var feature = new OpenLayers.Feature.Vector(geom);
             this_.nominatimLayerZoomOut_.removeAllFeatures();
             this_.nominatimLayerZoomOut_.addFeatures([feature]);
+            this_.modifyControl_.selectFeature(e.feature);
+            this_.dispatchEvent({
+              type: "bboxadded"
+            });
           }
         }
       }
@@ -183,9 +190,15 @@ cz.mzk.authorities.template.Map = function(element) {
   this.mapProjection_ = new OpenLayers.Projection('EPSG:900913');
   /**
    * @private
-   * @type {!OpenLayers.Control.ModifyFeature}
+   * @type {!OpenLayers.Control.ModifyRectangle}
    */
-  this.modifyControl_ = new OpenLayers.Control.ModifyFeature(this.nominatimLayer_);
+  this.modifyControl_ = new OpenLayers.Control.ModifyRectangle(
+    this.nominatimLayer_,
+    {
+      standalone: true,
+      clickout: false
+    }
+  );
   /**
    * @private
    * @type {!OpenLayers.Control.DrawFeature}
@@ -224,6 +237,7 @@ cz.mzk.authorities.template.Map = function(element) {
   this.map_.addControl(this.createBBoxControl_);
   this.map_.addControl(this.panelControl_);
 };
+goog.inherits(cz.mzk.authorities.template.Map, goog.events.EventTarget);
 
 cz.mzk.authorities.template.Map.prototype.updateSize = function() {
   this.map_.updateSize();
@@ -255,6 +269,19 @@ cz.mzk.authorities.template.Map.prototype.getBBox = function() {
   }
   return bbox;
 };
+
+/**
+ * Activates or deactivates CreateBBox control.
+ * @param {boolean} activate
+ */
+cz.mzk.authorities.template.Map.prototype.setActivateCreateBBox =
+    function(activate) {
+  if (activate) {
+    this.createBBoxControl_.activate();
+  } else {
+    this.createBBoxControl_.deactivate();
+  }
+}
 
 /**
  * Clear the map.

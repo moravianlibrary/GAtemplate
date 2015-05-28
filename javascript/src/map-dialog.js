@@ -8,6 +8,8 @@ goog.require('goog.ui.ac.Nominatim');
 goog.require('goog.ui.Dialog');
 goog.require('goog.ui.Dialog.ButtonSet');
 goog.require('goog.ui.Dialog.DefaultButtonKeys');
+goog.require('goog.ui.FlatButtonRenderer');
+goog.require('goog.ui.ToggleButton');
 goog.require('goog.ui.Menu');
 goog.require('goog.ui.MenuItem');
 goog.require('goog.ui.Component.EventType');
@@ -32,25 +34,36 @@ cz.mzk.authorities.template.dialogs.MapDialog = function() {
   this.setContent(
       '<div id="mapdialog-content">' +
       '<div id="mapdialog-topmenu">' +
+      '</div>' +
+      '<div id="mapdialog-leftmenu">' +
       '<form id="mapdialog-search-form">' +
+      '<span class="icon-search"></span>' +
       '<input type="text" id="mapdialog-search" autocomplete="off">' +
       '<input type="submit" id="mapdialog-search-submit" value="Hledat">' +
       '</form>' +
+      '<div class="heading">Výsledky hledání</div>' +
       '</div>' +
       '<div id="mapdialog-map"></div>' +
-      '<div id="mapdialog-rightmenu"></div>' +
       '<div id="loading-overlay"></div>' +
       '<div/>'
   );
   /**
+   * @private
+   * @type {goog.ui.ToggleButton}
+   */
+  this.bboxButton_ = this.createCreateBBoxButton_();
+  /**
    * @type {goog.ui.Dialog.ButtonSet}
    */
-  var buttonSet = goog.ui.Dialog.ButtonSet.createOkCancel();
-  buttonSet.setDefault(null);
+  var buttonSet = new goog.ui.Dialog.ButtonSet();
+  buttonSet.addButton({caption: 'Uložit výběr', key: goog.ui.Dialog.DefaultButtonKeys.OK}, true);
+  buttonSet.addButton({caption: 'Zavřít bez uložení', key: goog.ui.Dialog.DefaultButtonKeys.CANCEL}, false, true);
+
   this.setButtonSet(buttonSet);
   this.setModal(true);
   this.setDraggable(false);
   this.setVisible(true);
+  buttonSet.setButtonEnabled(goog.ui.Dialog.DefaultButtonKeys.OK, false);
   /**
    * @type {goog.dom.DomHelper}
    */
@@ -75,7 +88,7 @@ cz.mzk.authorities.template.dialogs.MapDialog = function() {
    * @type {goog.ui.Menu}
    */
   this.menu_ = new goog.ui.Menu();
-  this.menu_.render(domHelper.getElement('mapdialog-rightmenu'));
+  this.menu_.render(domHelper.getElement('mapdialog-leftmenu'));
   /**
    * @private
    * @type {Element}
@@ -153,13 +166,30 @@ cz.mzk.authorities.template.dialogs.MapDialog = function() {
     );
     this_.loadingOverlayElement_.style.display = 'block';
   });
+  goog.events.listen(this.bboxButton_, goog.ui.Component.EventType.ACTION, function(e) {
+    this_.map_.setActivateCreateBBox(this.isChecked());
+  });
+  goog.events.listen(this.map_, 'bboxadded', function(e) {
+    buttonSet.setButtonEnabled(goog.ui.Dialog.DefaultButtonKeys.OK, true);
+  });
+  goog.events.listen(this.map_, 'sketchcomplete', function(e) {
+    this_.bboxButton_.setChecked(false);
+  })
   this.setVisible(false);
 };
 
 goog.inherits(cz.mzk.authorities.template.dialogs.MapDialog, goog.ui.Dialog);
 
 /**
- * @inheritDoc
+ * @override
+ */
+ cz.mzk.authorities.template.dialogs.MapDialog.prototype.enterDocument = function() {
+  goog.base(this, 'enterDocument');
+  this.bboxButton_.render(goog.dom.getElement('mapdialog-topmenu'));
+};
+
+/**
+ * @override
  */
 cz.mzk.authorities.template.dialogs.MapDialog.prototype.setVisible = function(value) {
   goog.base(this, 'setVisible', value);
@@ -211,6 +241,12 @@ cz.mzk.authorities.template.dialogs.MapDialog.prototype.getBBox = function() {
   return this.map_.getBBox();
 };
 
+cz.mzk.authorities.template.dialogs.MapDialog.prototype.clear = function() {
+  this.searchElement_.value = '';
+  this.menu_.removeChildren(true);
+  this.map_.clear();
+}
+
 /**
  * Retypes string values into their number representation.
  * @private
@@ -224,3 +260,20 @@ cz.mzk.authorities.template.dialogs.MapDialog.prototype.retypePolygon_ = functio
   }
   return result;
 };
+
+/**
+ * Creates CreateBBoxButton
+ * @return {goog.ui.ToggleButton}
+ */
+cz.mzk.authorities.template.dialogs.MapDialog.prototype.createCreateBBoxButton_ = function() {
+  var content = goog.dom.createElement('div');
+  var img = goog.dom.createDom('img', {'src': '/img/createbbox.png'});
+  var span = goog.dom.createDom('span', {}, 'Označit oblast výběrem');
+  goog.dom.appendChild(content, img);
+  goog.dom.appendChild(content, span);
+  var button = new goog.ui.ToggleButton(content,
+      /** @type {goog.ui.FlatButtonRenderer} */
+      (goog.ui.ControlRenderer.getCustomRenderer(
+        goog.ui.FlatButtonRenderer, 'goog-image-button')));
+  return button;
+}

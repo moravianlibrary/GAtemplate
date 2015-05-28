@@ -20,6 +20,7 @@ cz.mzk.authorities.template.main = function(options) {
     if (headingValue) {
       mapDialog.setSearchQuery(headingValue);
     }
+    mapDialog.clear();
     mapDialog.setVisible(true);
   });
 

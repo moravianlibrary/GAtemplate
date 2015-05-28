@@ -27,6 +27,6 @@ release: openlayers
 	  > ../js/main.js
 
 openlayers:
-	cd /home/dudae/Projects/GATemplate/javascript/vendor/openlayers/build;\
-	python build.py full /home/dudae/Projects/GATemplate/js/OpenLayers.js
+	cd /home/dudae/Projects/GAtemplate/javascript/vendor/openlayers/build;\
+	python build.py full /home/dudae/Projects/GAtemplate/js/OpenLayers.js
 

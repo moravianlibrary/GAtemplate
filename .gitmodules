@@ -1,3 +1,6 @@
+[submodule "javascript/vendor/openlayers"]
+	path = javascript/vendor/openlayers
+	url = https://github.com/moravianlibrary/openlayers
 [submodule "javascript/vendor/closure-library"]
 	path = javascript/vendor/closure-library
 	url = https://github.com/google/closure-library

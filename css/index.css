@@ -1,47 +1,92 @@
+body {
+    font-family: 'Open Sans', sans-serif;
+}
 .modal-dialog {
     width: 98%;
-    height: 98%;
+    height: 96%;
 }
 .modal-dialog-content {
     position: absolute;
     left: 5px;
     right: 5px;
     top: 38px;
-    bottom: 42px;
+    bottom: 7px;
 }
 .modal-dialog-buttons {
     position: absolute;
-    left: 5px;
-    right: 5px;
-    bottom: 5px;
+    left: 309px;
+}
+.modal-dialog-buttons button {
+    background-color: #ab1511;
+    padding: 4pt 10pt 4pt 10pt;
+    text-align: center;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 10pt;
+    color: #FFFFFF;
+    margin-left: 5px;
+    margin-right: 5px;
+    border-radius: 3px;
+    cursor: pointer;
+    border: none;
+}
+.modal-dialog-buttons button[disabled] {
+    background-color: #9d9d9d;
+    cursor: default;
+}
+.goog-buttonset-default {
+    font-weight: normal;
 }
 #mapdialog-content {
 }
 #mapdialog-topmenu {
     position: absolute;
-    left: 10px;
+    left: 310px;
     top: 15px;
     bottom: 50px;
     right: 0px;
 }
+#mapdialog-topmenu .goog-image-button {
+    position: absolute;
+    top: 0;
+    left: 275px;
+}
 #mapdialog-map {
     position: absolute;
-    left: 0px;
+    left: 303px;
     top: 50px;
     bottom: 0px;
-    right: 200px;
+    right: 0px;
     /*width: 200px;
     height: 200px;*/
     margin: 0px;
     padding: 0px;
 }
-#mapdialog-rightmenu {
+#mapdialog-leftmenu {
     position: absolute;
-    top: 50px;
-    right: 0px;
+    top: 0px;
+    left: 0px;
     bottom: 0px;
-    width: 200px;
-    overflow-y: scroll;
+    width: 300px;
+    overflow-y: auto;
+    border-right: 3px solid #C9DFFD;
+}
+#mapdialog-leftmenu .heading {
+    padding: 20px;
+    padding-bottom: 12px;
+    font-weight: bold;
+    border-bottom: 1px solid #c9c9c9;
+}
+#mapdialog-search-form {
+    margin: 10px;
+}
+#mapdialog-search-form input {
+    font-size: 12px;
+}
+#mapdialog-search-form .icon-search {
+    margin-right: 10px;
+    color: gray;
+    font-weight: bold;
+    font-size: 17px;
 }
 .ac-renderer {
     left: 10px;
@@ -49,7 +94,12 @@
 }
 .goog-menuitem {
     white-space: normal !important;
-    padding: 4px 4px 4px 4px;
+    border-bottom: 1px solid #c9c9c9;
+    padding-top: 13px;
+    padding-bottom: 13px;
+}
+.goog-menuitem-content {
+    font-family: 'Open Sans', sans-serif;
 }
 .goog-menu {
     border: none;
@@ -115,4 +165,7 @@
     /* Firefox 0.9+, Safari 2?, Chrome any?
     /* Opera 9+, IE 9+ */
     opacity: 0.7;
+}
+.create-bbox {
+    display: none;
 }
