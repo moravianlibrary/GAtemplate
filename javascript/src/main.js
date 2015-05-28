@@ -15,12 +15,12 @@ cz.mzk.authorities.template.main = function(options) {
   var mapDialog = new cz.mzk.authorities.template.dialogs.MapDialog();
 
   goog.events.listen(goog.dom.getElement(options.target), 'click', function(e) {
+    mapDialog.clear();
     /** @type {string} */
     var headingValue = goog.dom.getElement(options.heading).value;
     if (headingValue) {
       mapDialog.setSearchQuery(headingValue);
     }
-    mapDialog.clear();
     mapDialog.setVisible(true);
   });
 
