@@ -40,7 +40,7 @@ cz.mzk.authorities.template.Authority = function(opt_options) {
   this.nominatimSouth_ = options.nominatimSouth || null;
   /**
    * @private
-   * @type {?Array.<Array.<number>>}
+   * @type {?Object}
    */
   this.nominatimPolygon_ = options.nominatimPolygon || null;
 }
@@ -111,7 +111,7 @@ cz.mzk.authorities.template.Authority.prototype.setNominatimSouth = function(val
 
 /**
  * Getter method for nominatimPolygon.
- * @return {?Array.<Array.<number>>}
+ * @return {?Object}
  */
 cz.mzk.authorities.template.Authority.prototype.getNominatimPolygon = function() {
   return this.nominatimPolygon_;
@@ -119,7 +119,7 @@ cz.mzk.authorities.template.Authority.prototype.getNominatimPolygon = function()
 
 /**
  * Setter method for nominatimPolygon.
- * @param {?Array.<Array.<number>>} value
+ * @param {?Object} value
  */
 cz.mzk.authorities.template.Authority.prototype.setNominatimPolygon = function(value) {
   this.nominatimPolygon_ = value;

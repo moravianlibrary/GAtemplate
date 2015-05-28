@@ -129,7 +129,8 @@ cz.mzk.authorities.template.dialogs.MapDialog = function() {
     this_.jsonpRequest_ = this_.jsonp_.send(
       {
         'q' : this_.searchElement_.value,
-        'polygon' : '1',
+        'polygon_geojson' : '1',
+        'gazetteer' : '1',
         'format' : 'json'
       },
       function(data) {
@@ -143,8 +144,8 @@ cz.mzk.authorities.template.dialogs.MapDialog = function() {
               nominatimWest: parseFloat(data[i]['boundingbox'][2]),
               nominatimEast: parseFloat(data[i]['boundingbox'][3])
           });
-          if (data[i]['polygonpoints']) {
-            item['authority'].setNominatimPolygon(this_.retypePolygon_(data[i]['polygonpoints']));
+          if (data[i]['geojson']) {
+            item['authority'].setNominatimPolygon(data[i]['geojson']);
           }
           goog.events.listen(item, goog.ui.Component.EventType.ACTION, function(e) {
             this_.map_.showAuthority(e.target['authority']);
@@ -246,20 +247,6 @@ cz.mzk.authorities.template.dialogs.MapDialog.prototype.clear = function() {
   this.menu_.removeChildren(true);
   this.map_.clear();
 }
-
-/**
- * Retypes string values into their number representation.
- * @private
- * @param {Array.<Array.<string>>} polygon
- * @return {Array.<Array.<number>>}
- */
-cz.mzk.authorities.template.dialogs.MapDialog.prototype.retypePolygon_ = function(polygon) {
-  var result = [];
-  for (var i = 0; i < polygon.length; i++) {
-    result.push([parseFloat(polygon[i][0]), parseFloat(polygon[i][1])]);
-  }
-  return result;
-};
 
 /**
  * Creates CreateBBoxButton

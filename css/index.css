@@ -97,6 +97,7 @@ body {
     border-bottom: 1px solid #c9c9c9;
     padding-top: 13px;
     padding-bottom: 13px;
+    width: 100%;
 }
 .goog-menuitem-content {
     font-family: 'Open Sans', sans-serif;

@@ -111,7 +111,7 @@ cz.mzk.authorities.template.Map = function(element) {
         styleMap: new OpenLayers.StyleMap({
           fillColor: '#ffffff',
           fillOpacity: 0.3,
-          strokeColor: '#002EB8',
+          strokeColor: '#8C8C8C',
           strokeWidth: 2,
           // Default options
           cursor: 'inherit',
@@ -131,8 +131,53 @@ cz.mzk.authorities.template.Map = function(element) {
           strokeDashStyle: 'solid',
           strokeLinecap: 'round',
           strokeOpacity: 1
-        })
+        }),
+        eventListeners: {
+          sketchcomplete: function() {return true},
+          featureadded: function(e) {
+            var point = e.feature.geometry.getBounds().getCenterLonLat();
+            var geom = new OpenLayers.Geometry.Point(point.lon, point.lat);
+            var feature = new OpenLayers.Feature.Vector(geom);
+            this_.nominatimLayerZoomOutOld_.removeAllFeatures();
+            this_.nominatimLayerZoomOutOld_.addFeatures([feature]);
+          }
+        }
       }
+  );
+  /**
+   * @private
+   * @type {!OpenLayers.Layer.Vector}
+   */
+  this.nominatimLayerZoomOutOld_ = new OpenLayers.Layer.Vector(
+    'nominatim-layer-zoomout-old',
+    {
+      displayInLayerSwitcher: false,
+      styleMap: new OpenLayers.StyleMap({
+        fillColor: '#8C8C8C',
+        fillOpacity: 1.0,
+        strokeColor: '#8C8C8C',
+        strokeWidth: 2,
+        // Default options
+        cursor: 'inherit',
+        fontColor: '000000',
+        hoverFillColor: 'white',
+        hoverFillOpacity: 0.8,
+        hoverPointRadius: 1,
+        hoverPointUnit: '%',
+        hoverStrokeColor: 'red',
+        hoverStrokeOpacity: 1,
+        hoverStrokeWidth: 0.2,
+        labelAlign: 'cm',
+        labelOutlineColor: 'white',
+        labelOutlineWidth: 3,
+        pointRadius: 6,
+        pointerEvents: 'visiblePainted',
+        strokeDashStyle: 'solid',
+        strokeLinecap: 'round',
+        strokeOpacity: 1
+      }),
+      visibility: false
+    }
   );
   /**
    * @private
@@ -146,7 +191,14 @@ cz.mzk.authorities.template.Map = function(element) {
           fillOpacity: 0.3,
           strokeColor: '#FFCC33',
           strokeWidth: 2
-        })
+        }),
+        preFeatureInsert: function(feature) {
+          window.console.log('preFeatureInsert');
+          return feature.geometry.transform(
+            this_.gpsProjection_,
+            this_.mapProjection_
+          );
+        }
       }
   );
   /**
@@ -166,12 +218,14 @@ cz.mzk.authorities.template.Map = function(element) {
       this.polygonLayer_,
       this.nominatimLayerOld_,
       this.nominatimLayer_,
-      this.nominatimLayerZoomOut_
+      this.nominatimLayerZoomOut_,
+      this.nominatimLayerZoomOutOld_
     ],
     eventListeners: {
       /** @type {function(this:OpenLayers.Map)}*/
       'zoomend': function() {
-        this_.swapNominatimLayers_();
+        this_.swapNominatimLayers_(this_.nominatimLayer_, this_.nominatimLayerZoomOut_);
+        this_.swapNominatimLayers_(this_.nominatimLayerOld_, this_.nominatimLayerZoomOutOld_);
       }
     },
     center: [0, 0],
@@ -249,12 +303,17 @@ cz.mzk.authorities.template.Map.prototype.updateSize = function() {
  */
 cz.mzk.authorities.template.Map.prototype.showAuthority = function(authority) {
   this.nominatimLayerOld_.removeAllFeatures();
-  this.nominatimLayerOld_.addFeatures(this.nominatimLayer_.features);
+  var oldFeature = this.nominatimLayer_.getFeatureByFid('feature');
+  if (oldFeature) {
+    this.nominatimLayerOld_.addFeatures([oldFeature]);
+  }
   this.clearInternal_();
   this.drawNominatim_(authority);
   this.drawNominatimPolygon_(authority);
   this.addModifyInteraction_();
   this.move_(authority);
+  this.swapNominatimLayers_(this.nominatimLayer_, this.nominatimLayerZoomOut_);
+  this.swapNominatimLayers_(this.nominatimLayerOld_, this.nominatimLayerZoomOutOld_);
 };
 
 /**
@@ -331,7 +390,7 @@ cz.mzk.authorities.template.Map.prototype.drawNominatim_ = function(authority) {
  */
 cz.mzk.authorities.template.Map.prototype.drawNominatimPolygon_ = function(authority) {
   if (authority.hasNominatimPolygon()) {
-    this.drawPolygon_(
+    this.drawGeoJSON_(
       authority.getNominatimPolygon(),
       this.polygonLayer_
     );
@@ -363,7 +422,11 @@ cz.mzk.authorities.template.Map.prototype.move_ = function(authority) {
     bounds.extendXY(eastSouth.lon, eastSouth.lat);
     bounds.extendXY(westSouth.lon, westSouth.lat);
 
-    this.map_.zoomToExtent(bounds, true);
+    goog.array.forEach(this.nominatimLayerOld_.features, function(feature, i, a) {
+      bounds.extend(feature.geometry.getBounds());
+    });
+
+    this.map_.zoomToExtent(bounds, false);
   }
 };
 
@@ -376,6 +439,7 @@ cz.mzk.authorities.template.Map.prototype.drawPoint_ = function(coordinates, lay
   var coors = new OpenLayers.LonLat(coordinates[0], coordinates[1]).transform(this.gpsProjection_, this.mapProjection_)
   var point = new OpenLayers.Geometry.Point(coors[0], coors[1]);
   var feature = new OpenLayers.Feature.Vector(point);
+  feature['fid'] = 'feature';
   layer.addFeatures([feature]);
 };
 
@@ -404,7 +468,19 @@ cz.mzk.authorities.template.Map.prototype.drawPolygon_ = function(coordinates, l
   }
   var polygon = new OpenLayers.Geometry.Polygon([new OpenLayers.Geometry.LinearRing(polygonPoints)]);
   var feature = new OpenLayers.Feature.Vector(polygon);
+  feature['fid'] = 'feature';
   layer.addFeatures([feature]);
+};
+
+/**
+ * Draw GeoJSON.
+ * @param {Object} geojson
+ * @param {OpenLayers.Layer.Vector} layer
+ */
+cz.mzk.authorities.template.Map.prototype.drawGeoJSON_ = function(geojson, layer) {
+  window.console.log(geojson);
+  var geojsonFormat = new OpenLayers.Format.GeoJSON();
+  layer.addFeatures(geojsonFormat.read(geojson));
 };
 
 /**
@@ -426,13 +502,15 @@ cz.mzk.authorities.template.Map.prototype.addModifyInteraction_ = function() {
 
 /**
  * Swaps nominatimLayerZoomOut and nominatimLayer if it is necessary.
+ * @param {OpenLayers.Layer.Vector} layer
+ * @param {OpenLayers.Layer.Vector} zoomout
  */
-cz.mzk.authorities.template.Map.prototype.swapNominatimLayers_ = function() {
+cz.mzk.authorities.template.Map.prototype.swapNominatimLayers_ = function(layer, zoomout) {
   if (!this.map_) {
     return;
   }
   var mapExtent = this.map_.getExtent();
-  var bboxExtent = this.nominatimLayer_.getDataExtent();
+  var bboxExtent = layer.getDataExtent();
   if (!bboxExtent) {
     return;
   }
@@ -440,10 +518,10 @@ cz.mzk.authorities.template.Map.prototype.swapNominatimLayers_ = function() {
   var mapArea = mapExtent.getWidth() * mapExtent.getHeight();
   var ratio = bboxArea / mapArea;
   if (ratio < 0.0009) {
-    this.nominatimLayer_.setVisibility(false);
-    this.nominatimLayerZoomOut_.setVisibility(true);
+    layer.setVisibility(false);
+    zoomout.setVisibility(true);
   } else {
-    this.nominatimLayer_.setVisibility(true);
-    this.nominatimLayerZoomOut_.setVisibility(false);
+    layer.setVisibility(true);
+    zoomout.setVisibility(false);
   }
 };

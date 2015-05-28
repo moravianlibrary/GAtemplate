@@ -51,7 +51,8 @@ OpenLayers.Layer.prototype.setVisibility = function(visibility) {}
  * @param {{displayInLayerSwitcher: (boolean|undefined),
  *          styleMap: OpenLayers.StyleMap,
  *          eventListeners: ({sketchcomplete: function(this:OpenLayers.Layer.Vector,OpenLayers.Feature.Vector):boolean,
- *                            featureadded: function(this:OpenLayers.Layer.Vector,{feature: OpenLayers.Feature.Vector})}|undefined)}=} options
+ *                            featureadded: function(this:OpenLayers.Layer.Vector,{feature: OpenLayers.Feature.Vector})}|undefined),
+ *          preFeatureInsert: (function(OpenLayers.Feature.Vector)|undefined)}=} options
  * @extends {OpenLayers.Layer}
  */
 OpenLayers.Layer.Vector = function(name, options) {}
@@ -83,6 +84,11 @@ OpenLayers.Layer.Vector.prototype.removeAllFeatures = function(options) {}
 OpenLayers.Layer.Vector.prototype.getDataExtent = function() {}
 
 /**
+ * @param {string} fid
+ */
+OpenLayers.Layer.Vector.prototype.getFeatureByFid = function(fid) {}
+
+/**
  * @constructor
  * @param {string} name
  * @param {Array.<string>} url
@@ -105,6 +111,11 @@ OpenLayers.Bounds = function(left, bottom, right, top) {}
  * @param {number} y
  */
 OpenLayers.Bounds.prototype.extendXY = function(x, y) {}
+
+/**
+ * @param {OpenLayers.Bounds} bounds
+ */
+OpenLayers.Bounds.prototype.extend = function(bounds) {}
 
 /**
  * @return {Array.<number>}
@@ -336,3 +347,14 @@ OpenLayers.Handler = function(control, callbacks, options) {}
  * @extends {OpenLayers.Handler}
  */
 OpenLayers.Handler.RegularPolygon = function(control, callbacks, options) {}
+
+/**
+ * @constructor
+ */
+OpenLayers.Format.GeoJSON = function() {}
+
+/**
+ * @param {Object} geojson
+ * @return {Array.<OpenLayers.Feature.Vector>}
+ */
+OpenLayers.Format.GeoJSON.prototype.read = function(geojson) {}
