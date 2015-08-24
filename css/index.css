@@ -67,7 +67,6 @@ body {
     left: 0px;
     bottom: 0px;
     width: 300px;
-    overflow-y: auto;
     border-right: 3px solid #C9DFFD;
 }
 #mapdialog-leftmenu .heading {
@@ -75,6 +74,12 @@ body {
     padding-bottom: 12px;
     font-weight: bold;
     border-bottom: 1px solid #c9c9c9;
+}
+#mapdialog-leftmenu .goog-menu {
+    position: absolute;
+    top: 93px;
+    bottom: 0;
+    overflow-y: auto;
 }
 #mapdialog-search-form {
     margin: 10px;
@@ -170,4 +175,13 @@ body {
 }
 .create-bbox {
     display: none;
+}
+#dialog-fulscreen-button {
+    position: absolute;
+    font-size: 16px;
+    top: 10px;
+    right: 38px;
+}
+#dialog-fulscreen-button:hover {
+    background: none;
 }

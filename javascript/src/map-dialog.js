@@ -53,6 +53,11 @@ cz.mzk.authorities.template.dialogs.MapDialog = function() {
    */
   this.bboxButton_ = this.createCreateBBoxButton_();
   /**
+   * @private
+   * @type {goog.ui.Button}
+   */
+  this.fullscreenButton_ = this.createFullscreenButton_();
+  /**
    * @type {goog.ui.Dialog.ButtonSet}
    */
   var buttonSet = new goog.ui.Dialog.ButtonSet();
@@ -75,9 +80,19 @@ cz.mzk.authorities.template.dialogs.MapDialog = function() {
   this.jsonp_ = null;
   /**
    * @private
-   * @type {?Object}
+   * @type {Object}
    */
   this.jsonpRequest_ = null;
+  /**
+   * @private
+   * @type {goog.net.Jsonp}
+   */
+  this.loadMoreResultsAjax_ = null;
+  /**
+   * @private
+   * @type {Array.<String>}
+   */
+  this.excludePlaceIDs_ = [];
   /**
    * @private
    * @type {cz.mzk.authorities.template.Map}
@@ -136,6 +151,8 @@ cz.mzk.authorities.template.dialogs.MapDialog = function() {
         this_.menu_.removeChildren(true);
         for (var i = 0; i < data.length; i++) {
           goog.asserts.assertString(data[i]['display_name']);
+          goog.asserts.assertString(data[i]['place_id']);
+          this_.excludePlaceIDs_.push(data[i]['place_id']);
           var item = new goog.ui.MenuItem(data[i]['display_name']);
           item['authority'] = new cz.mzk.authorities.template.Authority({
               nominatimSouth: parseFloat(data[i]['boundingbox'][0]),
@@ -166,8 +183,40 @@ cz.mzk.authorities.template.dialogs.MapDialog = function() {
     );
     this_.loadingOverlayElement_.style.display = 'block';
   });
+  goog.events.listen(this.menu_.getContentElement(), 'scroll', function(e) {
+    if (this.offsetHeight + this.scrollTop >= this.scrollHeight * 7 / 8) {
+  		this_.loadMoreResults_();
+    }
+    return false;
+  });
   goog.events.listen(this.bboxButton_, goog.ui.Component.EventType.ACTION, function(e) {
     this_.map_.setActivateCreateBBox(this.isChecked());
+  });
+  goog.events.listen(this.fullscreenButton_, goog.ui.Component.EventType.ACTION, function(e) {
+    var elem = this_.getDialogElement();
+    if (!document.fullscreenElement &&    // alternative standard method
+        !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement ) {
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.msRequestFullscreen) {
+        elem.msRequestFullscreen();
+      } else if (elem.mozRequestFullScreen) {
+        elem.mozRequestFullScreen();
+      } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen();
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+      } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      }
+    }
+
   });
   goog.events.listen(this.map_, 'bboxadded', function(e) {
     buttonSet.setButtonEnabled(goog.ui.Dialog.DefaultButtonKeys.OK, true);
@@ -186,6 +235,7 @@ goog.inherits(cz.mzk.authorities.template.dialogs.MapDialog, goog.ui.Dialog);
  cz.mzk.authorities.template.dialogs.MapDialog.prototype.enterDocument = function() {
   goog.base(this, 'enterDocument');
   this.bboxButton_.render(goog.dom.getElement('mapdialog-topmenu'));
+  this.fullscreenButton_.render(this.getDialogElement());
 };
 
 /**
@@ -193,29 +243,10 @@ goog.inherits(cz.mzk.authorities.template.dialogs.MapDialog, goog.ui.Dialog);
  */
 cz.mzk.authorities.template.dialogs.MapDialog.prototype.setVisible = function(value) {
   goog.base(this, 'setVisible', value);
-  var elem = this.getDialogElement();
   if (value && this.map_) {
     this.map_.updateSize();
     this.searchElement_.focus();
-    if (elem.requestFullscreen) {
-      elem.requestFullscreen();
-    } else if (elem.msRequestFullscreen) {
-      elem.msRequestFullscreen();
-    } else if (elem.mozRequestFullScreen) {
-      elem.mozRequestFullScreen();
-    } else if (elem.webkitRequestFullscreen) {
-      elem.webkitRequestFullscreen();
-    }
   } else {
-    if (document.exitFullscreen) {
-      document.exitFullscreen();
-    } else if (document.msExitFullscreen) {
-      document.msExitFullscreen();
-    } else if (document.mozCancelFullScreen) {
-      document.mozCancelFullScreen();
-    } else if (document.webkitExitFullscreen) {
-      document.webkitExitFullscreen();
-    }
     if (this.jsonp_) {
       goog.asserts.assert(this.jsonpRequest_ != null);
       this.jsonp_.cancel(this.jsonpRequest_);
@@ -248,6 +279,51 @@ cz.mzk.authorities.template.dialogs.MapDialog.prototype.clear = function() {
 }
 
 /**
+ * Load more results
+ */
+cz.mzk.authorities.template.dialogs.MapDialog.prototype.loadMoreResults_ = function() {
+  if (this.loadMoreResultsAjax_) {
+    return;
+  }
+  var this_ = this;
+  this.loadMoreResultsAjax_ = new goog.net.Jsonp('http://nominatim.mzk.cz', 'json_callback');
+  this.loadMoreResultsAjax_.send(
+    {
+      'q' : this_.searchElement_.value,
+      'polygon_geojson' : '1',
+      'format' : 'json',
+      'exclude_place_ids': this.excludePlaceIDs_.join()
+    },
+    function(data) {
+      for (var i = 0; i < data.length; i++) {
+        goog.asserts.assertString(data[i]['display_name']);
+        goog.asserts.assertString(data[i]['place_id']);
+        this_.excludePlaceIDs_.push(data[i]['place_id']);
+        var item = new goog.ui.MenuItem(data[i]['display_name']);
+        item['authority'] = new cz.mzk.authorities.template.Authority({
+            nominatimSouth: parseFloat(data[i]['boundingbox'][0]),
+            nominatimNorth: parseFloat(data[i]['boundingbox'][1]),
+            nominatimWest: parseFloat(data[i]['boundingbox'][2]),
+            nominatimEast: parseFloat(data[i]['boundingbox'][3])
+        });
+        if (data[i]['geojson']) {
+          item['authority'].setNominatimPolygon(data[i]['geojson']);
+        }
+        goog.events.listen(item, goog.ui.Component.EventType.ACTION, function(e) {
+          this_.map_.showAuthority(e.target['authority']);
+        });
+        this_.menu_.addChild(item, true);
+      }
+      this_.loadMoreResultsAjax_ = null;
+    },
+    function(error) {
+      this_.loadMoreResultsAjax_ = null;
+    }
+  );
+
+}
+
+/**
  * Creates CreateBBoxButton
  * @return {goog.ui.ToggleButton}
  */
@@ -257,9 +333,50 @@ cz.mzk.authorities.template.dialogs.MapDialog.prototype.createCreateBBoxButton_ 
   var span = goog.dom.createDom('span', {}, 'Označit oblast výběrem');
   goog.dom.appendChild(content, img);
   goog.dom.appendChild(content, span);
-  var button = new goog.ui.ToggleButton(content,
-      /** @type {goog.ui.FlatButtonRenderer} */
-      (goog.ui.ControlRenderer.getCustomRenderer(
-        goog.ui.FlatButtonRenderer, 'goog-image-button')));
+  /** @type {goog.ui.FlatButtonRenderer} */
+  var renderer = /** @type {goog.ui.FlatButtonRenderer} */ (goog.ui.ControlRenderer.getCustomRenderer(
+    goog.ui.FlatButtonRenderer, 'goog-image-button'));
+
+  renderer.createDom = function(button) {
+    var classNames = this.getClassNames(button);
+	  var attributes = {
+	    'class': goog.ui.INLINE_BLOCK_CLASSNAME + ' ' + classNames.join(' '),
+      'id': 'dialog-createbbox-button'
+	  };
+	  var element = button.getDomHelper().createDom(
+	      goog.dom.TagName.DIV, attributes, button.getContent());
+	  this.setTooltip(element, button.getTooltip());
+	  return element;
+  }
+
+  var button = new goog.ui.ToggleButton(content, renderer);
+  return button;
+}
+
+/**
+ * Creates FulscreenButton
+ * @return {goog.ui.Button}
+ */
+cz.mzk.authorities.template.dialogs.MapDialog.prototype.createFullscreenButton_ = function() {
+  var content = goog.dom.createElement('div');
+  var img = goog.dom.createDom('span', {'class': 'icon-arrows-alt'});
+  goog.dom.appendChild(content, img);
+  /** @type {goog.ui.FlatButtonRenderer} */
+  var renderer = /** @type {goog.ui.FlatButtonRenderer} */ (goog.ui.ControlRenderer.getCustomRenderer(
+    goog.ui.FlatButtonRenderer, 'goog-image-button'));
+
+  renderer.createDom = function(button) {
+    var classNames = this.getClassNames(button);
+	  var attributes = {
+	    'class': goog.ui.INLINE_BLOCK_CLASSNAME + ' ' + classNames.join(' '),
+      'id': 'dialog-fulscreen-button'
+	  };
+	  var element = button.getDomHelper().createDom(
+	      goog.dom.TagName.DIV, attributes, button.getContent());
+	  this.setTooltip(element, button.getTooltip());
+	  return element;
+  }
+
+  var button = new goog.ui.Button(content, renderer);
   return button;
 }
